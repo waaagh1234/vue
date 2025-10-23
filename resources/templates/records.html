@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购买记录 - 优品商城</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .records-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .records-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .records-subtitle {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .continue-shopping {
+            display: inline-flex;
+            align-items: center;
+            color: #ff0036;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .continue-shopping:hover {
+            background-color: #f5f5f5;
+        }
+
+        .continue-shopping i {
+            margin-right: 5px;
+        }
+
+        .records-content {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .records-list {
+            width: 100%;
+        }
+
+        .record-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .record-image {
+            width: 100px;
+            height: 100px;
+            margin-right: 15px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .record-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .record-item:hover .record-image img {
+            transform: scale(1.05);
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .record-price {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 10px;
+            color: #ff0036;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .record-original-price {
+            color: #999;
+            font-size: 14px;
+            text-decoration: line-through;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .record-time {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .record-order-id {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .record-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 5px;
+            color: white;
+        }
+
+        .status-pending {
+            background-color: #ff9800;
+        }
+
+        .status-processing {
+            background-color: #2196F3;
+        }
+
+        .status-completed {
+            background-color: #4CAF50;
+        }
+
+        .status-cancelled {
+            background-color: #f44336;
+        }
+
+        .order-progress {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .progress-step {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-step.active {
+            background-color: #4CAF50;
+        }
+
+        .progress-line {
+            flex: 1;
+            height: 2px;
+            background-color: #ddd;
+            margin: 0 5px;
+        }
+
+        .progress-line.active {
+            background-color: #4CAF50;
+        }
+
+        .progress-label {
+            position: absolute;
+            top: 25px;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            width: 60px;
+            margin-left: -20px;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .favorite-btn {
+            color: #666;
+        }
+
+        .favorite-btn.active {
+            color: #ff0036;
+        }
+
+        .favorite-btn.active i {
+            color: #ff0036;
+        }
+
+        .empty-records {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-records i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-records-text {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-message p {
+            font-size: 16px;
+            color: #ff0036;
+            margin-bottom: 20px;
+        }
+
+        .error-message button {
+            padding: 8px 16px;
+            background: #ff0036;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .error-message button:hover {
+            background: #e60033;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover, .pagination-btn.active {
+            background: #ff0036;
+            color: #fff;
+            border-color: #ff0036;
+        }
+
+        /* 评论模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s linear 0.25s, opacity 0.25s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+        }
+
+        .review-modal {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #ff0036;
+        }
+
+        .review-form-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .review-form-group {
+            margin-bottom: 20px;
+        }
+
+        .review-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .review-form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .review-form-group textarea:focus {
+            outline: none;
+            border-color: #ff0036;
+        }
+
+        .rating-container {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .rating-container input {
+            display: none;
+        }
+
+        .rating-container label {
+            cursor: pointer;
+            font-size: 25px;
+            color: #ddd;
+            margin-right: 5px;
+            transition: color 0.3s;
+        }
+
+        .rating-container label:hover,
+        .rating-container label:hover ~ label,
+        .rating-container input:checked ~ label {
+            color: #ffb700;
+        }
+
+        .anonymous-option {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .anonymous-option input {
+            margin-right: 8px;
+        }
+
+        .submit-review-btn {
+            background-color: #ff0036;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .submit-review-btn:hover {
+            background-color: #e60030;
+        }
+
+        .review-btn {
+            background-color: #ff9500;
+            color: white;
+        }
+
+        .review-btn:hover {
+            background-color: #e68600;
+        }
+
+        .review-btn i {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .record-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .review-modal {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="records-header">
+        <div>
+            <h1 class="records-title">我的购买记录</h1>
+            <p class="records-subtitle">共 <span id="recordCount">0</span> 条记录</p>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <a href="my-reviews.html" class="continue-shopping" style="background-color: #f5f5f5;">
+                <i class="fas fa-comment"></i> 我的评论
+            </a>
+            <a href="mall.html" class="continue-shopping">
+                <i class="fas fa-arrow-left"></i> 返回商城
+            </a>
+        </div>
+    </div>
+
+    <div class="records-content" id="recordsContent">
+        <!-- 购买记录将通过JavaScript动态添加 -->
+    </div>
+
+    <div class="pagination" id="pagination">
+        <!-- 分页将通过JavaScript动态添加 -->
+    </div>
+</div>
+
+<!-- 评论模态框 -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="review-modal">
+        <span class="modal-close" onclick="closeReviewModal()">&times;</span>
+        <h3 class="review-form-title">商品评价</h3>
+        <form id="reviewForm">
+            <input type="hidden" id="reviewProductId" name="productId">
+
+            <div class="review-form-group">
+                <label>商品名称</label>
+                <div id="reviewProductName" style="padding: 8px 0; font-weight: bold;"></div>
+            </div>
+
+            <div class="review-form-group">
+                <label>评分</label>
+                <div class="rating-container">
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3" checked>
+                    <label for="star3">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">&#9733;</label>
+                </div>
+            </div>
+
+            <div class="review-form-group">
+                <label for="reviewComment">评价内容</label>
+                <textarea id="reviewComment" name="commentText" placeholder="请分享您对该商品的使用体验和评价..."></textarea>
+            </div>
+
+            <div class="anonymous-option">
+                <input type="checkbox" id="isAnonymous" name="isAnonymous">
+                <label for="isAnonymous">匿名发表</label>
+            </div>
+
+            <button type="button" class="submit-review-btn" onclick="submitReview()">提交评价</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 获取购买记录数据
+    async function fetchPurchaseRecords(page = 1) {
+        // 确保page是数字
+        if (typeof page !== 'number') {
+            page = 1;
+        }
+
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            renderEmptyRecords('请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/purchase-records/${userName}?page=${page}&size=10`);
+            if (!response.ok) {
+                throw new Error('获取购买记录失败');
+            }
+            const data = await response.json();
+
+            if (!data.records || data.records.length === 0) {
+                renderEmptyRecords('暂无购买记录');
+                return;
+            }
+
+            renderRecords(data.records, data.totalPages, page);
+        } catch (error) {
+            console.error('获取购买记录失败:', error);
+            renderError('获取购买记录失败');
+        }
+    }
+
+    // 渲染购买记录
+    function renderRecords(records, totalPages, currentPage) {
+        const recordsContent = document.getElementById('recordsContent');
+        const pagination = document.getElementById('pagination');
+        document.getElementById('recordCount').textContent = records.length;
+
+        // 渲染记录列表
+        let recordsHtml = '<div class="records-list">';
+
+        records.forEach(record => {
+            const purchaseDate = new Date(record.purchaseTime).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            recordsHtml += `
+                <div class="record-item" data-id="${record.id}">
+                    <div class="record-image">
+                        <img src="${record.imagePath}" alt="${record.productName}">
+                    </div>
+                    <div class="record-info">
+                        <div class="record-name">${record.productName}</div>
+                        <div class="record-price">
+                            ¥${record.price.toFixed(2)}
+                            <span class="record-original-price">¥${record.originalPrice.toFixed(2)}</span>
+                        </div>
+                        <div class="record-time">购买时间: ${purchaseDate}</div>
+                        <div class="record-order-id">订单号: ${record.orderId || '无订单号'}</div>
+                        ${record.completionTime ? `<div class="record-time">完成时间: ${new Date(record.completionTime).toLocaleString('zh-CN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</div>` : ''}
+                        <div>
+                            <span class="record-status ${getStatusClass(record.status)}">${record.status || '未处理'}</span>
+                        </div>
+                        <div class="order-progress">
+                            <div class="progress-step ${record.status ? 'active' : ''}" title="下单">
+                                1
+                                <div class="progress-label">下单</div>
+                            </div>
+                            <div class="progress-line ${record.status && record.status !== '未处理' ? 'active' : ''}"></div>
+                            <div class="progress-step ${record.status && record.status !== '未处理' ? 'active' : ''}" title="处理中">
+                                2
+                                <div class="progress-label">处理中</div>
+                            </div>
+                            <div class="progress-line ${record.status === '已完成' ? 'active' : ''}"></div>
+                            <div class="progress-step ${record.status === '已完成' ? 'active' : ''}" title="已完成">
+                                3
+                                <div class="progress-label">已完成</div>
+                            </div>
+                        </div>
+                        <div class="record-actions">
+                            <span class="action-btn favorite-btn ${record.isFavorite ? 'active' : ''}"
+                                  onclick="toggleFavorite(${record.productId})">
+                                <i class="fas fa-heart"></i>${record.isFavorite ? '取消收藏' : '收藏'}
+                            </span>
+                            <span class="action-btn" onclick="addToCart(${record.productId})">
+                                <i class="fas fa-shopping-cart"></i>再次购买
+                            </span>
+                            <span class="action-btn" onclick="viewProductDetail(${record.productId})">
+                                <i class="fas fa-eye"></i>查看详情
+                            </span>
+                            <span class="action-btn review-btn" onclick="openReviewModal(${record.productId}, '${record.productName}')">
+                                <i class="fas fa-comment"></i>去评价
+                            </span>
+                            ${record.status !== '已完成' && record.status !== '已取消' ? `
+                            <span class="action-btn" onclick="cancelOrder('${record.orderId}')">
+                                <i class="fas fa-times-circle"></i>取消订单
+                            </span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        recordsHtml += '</div>';
+        recordsContent.innerHTML = recordsHtml;
+
+        // 渲染分页
+        renderPagination(totalPages, currentPage);
+    }
+
+    // 渲染分页
+    function renderPagination(totalPages, currentPage) {
+        const pagination = document.getElementById('pagination');
+        let paginationHtml = '';
+
+        if (totalPages > 1) {
+            // 上一页按钮
+            if (currentPage > 1) {
+                paginationHtml += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1}); return false;">上一页</button>`;
+            }
+
+            // 页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i}); return false;">${i}</button>`;
+            }
+
+            // 下一页按钮
+            if (currentPage < totalPages) {
+                paginationHtml += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1}); return false;">下一页</button>`;
+            }
+        }
+
+        pagination.innerHTML = paginationHtml;
+    }
+
+    // 跳转到指定页面
+    function goToPage(pageNumber) {
+        fetchPurchaseRecords(Number(pageNumber));
+    }
+
+    // 渲染空记录
+    function renderEmptyRecords(message) {
+        const recordsContent = document.getElementById('recordsContent');
+        document.getElementById('recordCount').textContent = '0';
+
+        recordsContent.innerHTML = `
+            <div class="empty-records">
+                <i class="fas fa-shopping-bag"></i>
+                <p class="empty-records-text">${message}</p>
+                <a href="mall.html" class="continue-shopping">
+                    <i class="fas fa-arrow-left"></i> 去商城选购
+                </a>
+            </div>
+        `;
+
+        // 清空分页
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    // 获取状态样式类
+    function getStatusClass(status) {
+        if (!status) return 'status-pending';
+
+        switch(status) {
+            case '未处理':
+                return 'status-pending';
+            case '处理中':
+                return 'status-processing';
+            case '已完成':
+                return 'status-completed';
+            case '已取消':
+                return 'status-cancelled';
+            default:
+                return 'status-pending';
+        }
+    }
+
+    // 渲染错误信息
+    function renderError(message) {
+        const recordsContent = document.getElementById('recordsContent');
+        recordsContent.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+                <button onclick="fetchPurchaseRecords()">重试</button>
+            </div>
+        `;
+
+        // 清空分页
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    // 取消订单
+    async function cancelOrder(orderId) {
+        if (!orderId) {
+            alert('订单号不能为空');
+            return;
+        }
+
+        if (!confirm('确定要取消该订单吗？')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/orders/${orderId}/status?status=已取消`, {
+                method: 'PUT'
+            });
+
+            if (!response.ok) {
+                throw new Error('取消订单失败');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('订单已成功取消');
+                // 重新加载购买记录
+                fetchPurchaseRecords();
+            } else {
+                alert('取消订单失败: ' + result.message);
+            }
+        } catch (error) {
+            console.error('取消订单出错:', error);
+            alert('取消订单失败，请稍后重试');
+        }
+    }
+
+    // 切换收藏状态
+    async function toggleFavorite(productId) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            // 检查当前收藏状态
+            const isFavorite = await checkFavoriteStatus(productId);
+
+            let url, method, data;
+            if (isFavorite) {
+                // 取消收藏
+                url = `http://localhost:8080/user-favorites/${userName}/${productId}`;
+                method = 'DELETE';
+            } else {
+                // 添加收藏
+                url = 'http://localhost:8080/user-favorites/add';
+                method = 'POST';
+                data = {
+                    userName: userName,
+                    productId: productId
+                };
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data ? JSON.stringify(data) : null
+            });
+
+            if (!response.ok) {
+                throw new Error('操作收藏失败');
+            }
+
+            // 更新按钮状态
+            const favoriteBtn = document.querySelector(`.favorite-btn[onclick="toggleFavorite(${productId})"]`);
+            if (favoriteBtn) {
+                favoriteBtn.classList.toggle('active', !isFavorite);
+                favoriteBtn.innerHTML = `<i class="fas fa-heart"></i>${!isFavorite ? '取消收藏' : '收藏'}`;
+            }
+
+            alert(isFavorite ? '已取消收藏' : '已加入收藏');
+        } catch (error) {
+            console.error('操作收藏失败:', error);
+            alert('操作收藏失败，请稍后重试');
+        }
+    }
+
+    // 检查商品是否已收藏
+    async function checkFavoriteStatus(productId) {
+        try {
+            const userName = localStorage.getItem('username');
+            if (!userName) return false;
+
+            const response = await fetch(`http://localhost:8080/user-favorites/${userName}/${productId}`);
+            if (!response.ok) return false;
+
+            const result = await response.json();
+            return result === true;
+        } catch (error) {
+            console.error('检查收藏状态失败:', error);
+            return false;
+        }
+    }
+
+    // 加入购物车
+    async function addToCart(productId) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userName: userName,
+                    productId: productId
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('加入购物车失败');
+            }
+
+            alert('已加入购物车');
+        } catch (error) {
+            console.error('加入购物车失败:', error);
+            alert('加入购物车失败，请稍后重试');
+        }
+    }
+
+    // 查看商品详情
+    function viewProductDetail(productId) {
+        window.location.href = `product-detail.html?id=${productId}`;
+    }
+
+    // 打开评论模态框
+    function openReviewModal(productId, productName) {
+        document.getElementById('reviewProductId').value = productId;
+        document.getElementById('reviewProductName').textContent = productName;
+        document.getElementById('reviewComment').value = '';
+        document.getElementById('isAnonymous').checked = false;
+
+        // 默认选中3星
+        document.getElementById('star3').checked = true;
+
+        // 显示模态框
+        document.getElementById('reviewModal').classList.add('active');
+    }
+
+    // 关闭评论模态框
+    function closeReviewModal() {
+        document.getElementById('reviewModal').classList.remove('active');
+    }
+
+    // 提交评论
+    async function submitReview() {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        const productId = document.getElementById('reviewProductId').value;
+        const commentText = document.getElementById('reviewComment').value.trim();
+        const rating = document.querySelector('input[name="rating"]:checked').value;
+        const isAnonymous = document.getElementById('isAnonymous').checked;
+
+        // 验证评论内容
+        if (!commentText) {
+            alert('请输入评价内容');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/reviews/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userName: userName,
+                    productId: parseInt(productId),
+                    commentText: commentText,
+                    rating: parseInt(rating),
+                    isAnonymous: isAnonymous
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('提交评价失败');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('评价提交成功！');
+                closeReviewModal();
+
+                // 将评论数据存入localStorage，便于刷新显示
+                const reviewData = {
+                    productId: parseInt(productId),
+                    rating: parseInt(rating),
+                    commentText: commentText,
+                    isAnonymous: isAnonymous,
+                    timestamp: new Date().getTime()
+                };
+
+                // 将评论数据存入localStorage
+                localStorage.setItem('lastReviewData', JSON.stringify(reviewData));
+            } else {
+                alert(result.message || '评价提交失败，请稍后重试');
+            }
+        } catch (error) {
+            console.error('提交评价失败:', error);
+            alert('提交评价失败，请稍后重试');
+        }
+    }
+
+    // 点击模态框外部关闭模态框
+    document.getElementById('reviewModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeReviewModal();
+        }
+    });
+
+    // 页面加载时获取购买记录
+    window.onload = fetchPurchaseRecords;
+</script>
+</body>
+
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的评论 - 优品商城</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .reviews-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reviews-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .reviews-subtitle {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #ff0036;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #f5f5f5;
+        }
+
+        .back-link i {
+            margin-right: 5px;
+        }
+
+        .reviews-content {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .review-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-product {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .review-product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .review-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-product-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-stars {
+            color: #ffb700;
+            margin-right: 10px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .review-text {
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .review-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .review-action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+
+        .review-action-btn i {
+            margin-right: 5px;
+        }
+
+        .delete-btn {
+            color: #fff;
+            background-color: #ff0036;
+        }
+
+        .delete-btn:hover {
+            background-color: #e60030;
+        }
+
+        .view-product-btn {
+            color: #666;
+            background-color: #f5f5f5;
+        }
+
+        .view-product-btn:hover {
+            background-color: #e5e5e5;
+        }
+
+        .anonymous-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #f0f0f0;
+            color: #666;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .empty-reviews {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-reviews i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-reviews-text {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-message p {
+            font-size: 16px;
+            color: #ff0036;
+            margin-bottom: 20px;
+        }
+
+        .error-message button {
+            padding: 8px 16px;
+            background: #ff0036;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .error-message button:hover {
+            background: #e60033;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover, .pagination-btn.active {
+            background: #ff0036;
+            color: #fff;
+            border-color: #ff0036;
+        }
+
+        /* 确认删除模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s linear 0.25s, opacity 0.25s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+        }
+
+        .confirm-modal {
+            background-color: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .confirm-message {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .confirm-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .confirm-cancel {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .confirm-cancel:hover {
+            background-color: #e5e5e5;
+        }
+
+        .confirm-delete {
+            background-color: #ff0036;
+            color: white;
+        }
+
+        .confirm-delete:hover {
+            background-color: #e60030;
+        }
+
+        @media (max-width: 768px) {
+            .review-product-image {
+                width: 50px;
+                height: 50px;
+            }
+
+            .review-actions {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 10px;
+            }
+
+            .review-action-btn {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="reviews-header">
+        <div>
+            <h1 class="reviews-title">我的评论</h1>
+            <p class="reviews-subtitle">当前用户: <span id="currentUser" style="font-weight: bold;"></span> | 共 <span id="reviewCount">0</span> 条评论</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="debugDatabase()" style="background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-database"></i> 调试数据库
+            </button>
+            <button onclick="debugUserReviews()" style="background-color: #ff9500; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-user-check"></i> 调试用户评论
+            </button>
+            <a href="records.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回购买记录
+            </a>
+        </div>
+    </div>
+
+    <div class="reviews-content" id="reviewsContent">
+        <!-- 评论将通过JavaScript动态添加 -->
+    </div>
+
+    <div class="pagination" id="pagination">
+        <!-- 分页将通过JavaScript动态添加 -->
+    </div>
+</div>
+
+<!-- 确认删除模态框 -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="confirm-modal">
+        <h3 class="confirm-title">确认删除</h3>
+        <p class="confirm-message">您确定要删除这条评论吗？此操作无法撤销。</p>
+        <div class="confirm-buttons">
+            <button class="confirm-btn confirm-cancel" onclick="closeConfirmModal()">取消</button>
+            <button class="confirm-btn confirm-delete" onclick="confirmDelete()">删除</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentReviewIdToDelete = null;
+
+    // 获取用户评论数据
+    async function fetchUserReviews(page = 1) {
+        // 确保page是数字
+        if (typeof page !== 'number') {
+            page = 1;
+        }
+
+        const userName = localStorage.getItem('username');
+        console.log('当前登录用户名:', userName);
+
+        if (!userName) {
+            console.log('用户未登录');
+            renderEmptyReviews('请先登录');
+            return;
+        }
+
+        try {
+            console.log(`正在获取用户 ${userName} 的评论，页码: ${page}`);
+
+            // 使用新的API获取评论和商品信息
+            const response = await fetch(`http://localhost:8080/api/user-reviews/${userName}`);
+
+            if (!response.ok) {
+                console.error(`请求失败，状态码: ${response.status}`);
+                throw new Error('获取评论失败');
+            }
+
+            const data = await response.json();
+            console.log('获取到的评论数据:', data);
+
+            // 使用reviews字段的数据
+            if (!data.reviews || data.reviews.length === 0) {
+                console.log('没有找到评论数据');
+                renderEmptyReviews('暂无评论');
+                return;
+            }
+
+            console.log(`找到 ${data.reviews.length} 条评论`);
+
+            // 构造分页数据
+            const totalItems = data.count || data.reviews.length;
+            const totalPages = Math.ceil(totalItems / 10);
+
+            renderReviews(data.reviews, totalPages, page);
+        } catch (error) {
+            console.error('获取评论失败:', error);
+            renderError('获取评论失败');
+        }
+    }
+
+    // 渲染评论
+    function renderReviews(reviews, totalPages, currentPage) {
+        const reviewsContent = document.getElementById('reviewsContent');
+        document.getElementById('reviewCount').textContent = reviews.length;
+
+        let reviewsHtml = '';
+
+        reviews.forEach(review => {
+            // 处理时间字段
+            const reviewDate = new Date(review.createTime).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 获取评论基本信息
+            const id = review.id;
+            const userName = review.userName;
+            const productId = review.productId;
+            const commentText = review.commentText;
+            const rating = review.rating;
+            const isAnonymous = review.isAnonymous;
+
+            // 获取商品信息
+            const productName = review.productName || '未知商品';
+
+            // 处理图片路径
+            let productImagePath = review.productImagePath || '';
+            console.log('原始图片路径:', productImagePath);
+
+            // 如果图片路径为空，使用默认图片
+            if (!productImagePath) {
+                productImagePath = 'https://via.placeholder.com/150x150?text=No+Image';
+            }
+
+            // 生成星星评分
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+            }
+
+            reviewsHtml += `
+                <div class="review-item" data-id="${id}">
+                    <div class="review-product">
+                        <div class="review-product-image">
+                            <img src="${productImagePath}" alt="${productName}">
+                        </div>
+                        <div>
+                            <div class="review-product-name">${productName}
+                                ${isAnonymous ? '<span class="anonymous-badge">匿名</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        <div class="review-stars">${starsHtml}</div>
+                        <div class="review-date">${reviewDate}</div>
+                    </div>
+                    <div class="review-text">${commentText}</div>
+                    <div class="review-actions">
+                        <span class="review-action-btn view-product-btn" onclick="viewProductDetail(${productId})">
+                            <i class="fas fa-eye"></i>查看商品
+                        </span>
+                        <span class="review-action-btn delete-btn" onclick="showDeleteConfirm(${id})">
+                            <i class="fas fa-trash-alt"></i>删除评论
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+
+        reviewsContent.innerHTML = reviewsHtml;
+
+        // 渲染分页
+        renderPagination(totalPages, currentPage);
+    }
+
+    // 渲染分页
+    function renderPagination(totalPages, currentPage) {
+        const pagination = document.getElementById('pagination');
+        let paginationHtml = '';
+
+        if (totalPages > 1) {
+            // 上一页按钮
+            if (currentPage > 1) {
+                paginationHtml += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1}); return false;">上一页</button>`;
+            }
+
+            // 页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i}); return false;">${i}</button>`;
+            }
+
+            // 下一页按钮
+            if (currentPage < totalPages) {
+                paginationHtml += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1}); return false;">下一页</button>`;
+            }
+        }
+
+        pagination.innerHTML = paginationHtml;
+    }
+
+    // 跳转到指定页面
+    function goToPage(pageNumber) {
+        fetchUserReviews(Number(pageNumber));
+    }
+
+    // 渲染空评论
+    function renderEmptyReviews(message) {
+        const reviewsContent = document.getElementById('reviewsContent');
+        document.getElementById('reviewCount').textContent = '0';
+
+        reviewsContent.innerHTML = `
+            <div class="empty-reviews">
+                <i class="fas fa-comment-slash"></i>
+                <p class="empty-reviews-text">${message}</p>
+                <a href="mall.html" class="back-link">
+                    <i class="fas fa-shopping-bag"></i> 去商城选购
+                </a>
+            </div>
+        `;
+
+        // 清空分页
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    // 渲染错误信息
+    function renderError(message) {
+        const reviewsContent = document.getElementById('reviewsContent');
+        reviewsContent.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+                <button onclick="fetchUserReviews()">重试</button>
+            </div>
+        `;
+
+        // 清空分页
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    // 显示删除确认模态框
+    function showDeleteConfirm(reviewId) {
+        currentReviewIdToDelete = reviewId;
+        document.getElementById('confirmModal').classList.add('active');
+    }
+
+    // 关闭确认模态框
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('active');
+        currentReviewIdToDelete = null;
+    }
+
+    // 确认删除评论
+    async function confirmDelete() {
+        if (!currentReviewIdToDelete) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/reviews/${currentReviewIdToDelete}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('删除评论失败');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('评论已成功删除');
+                closeConfirmModal();
+                fetchUserReviews(); // 重新加载评论列表
+            } else {
+                alert(result.message || '删除评论失败，请稍后重试');
+            }
+        } catch (error) {
+            console.error('删除评论失败:', error);
+            alert('删除评论失败，请稍后重试');
+        }
+    }
+
+    // 查看商品详情
+    function viewProductDetail(productId) {
+        window.location.href = `product-detail.html?id=${productId}`;
+    }
+
+    // 调试数据库
+    async function debugDatabase() {
+        try {
+            console.log('调试数据库信息');
+            const response = await fetch('http://localhost:8080/debug/reviews');
+
+            if (!response.ok) {
+                console.error(`请求失败，状态码: ${response.status}`);
+                alert('获取数据库信息失败');
+                return;
+            }
+
+            const data = await response.json();
+            console.log('数据库调试信息:', data);
+
+            let message = '';
+
+            // 显示JPA查询结果
+            if (data.reviews && data.reviews.length > 0) {
+                message += `JPA查询: 数据库中有 ${data.reviews.length} 条评论记录\n` +
+                      data.reviews.map(review => `ID: ${review.id}, 用户名: '${review.userName}', 商品ID: ${review.productId}`).join('\n');
+            } else {
+                message += 'JPA查询: 数据库中没有评论记录\n';
+            }
+
+            // 显示原生SQL查询结果
+            message += '\n\n原生SQL查询:\n';
+            if (data.rawReviews && data.rawReviews.length > 0) {
+                message += `数据库中有 ${data.rawReviews.length} 条评论记录\n` +
+                      data.rawReviews.map(review => `ID: ${review.id}, 用户名: '${review.user_name}', 商品ID: ${review.product_id}`).join('\n');
+            } else {
+                message += '数据库中没有评论记录';
+            }
+
+            // 显示用户信息
+            message += '\n\n用户信息:\n';
+            if (data.users && data.users.length > 0) {
+                message += `数据库中有 ${data.users.length} 个用户\n` +
+                      data.users.map(user => `ID: ${user.id}, 用户名: '${user.username}', 邮箱: '${user.email}'`).join('\n');
+            } else {
+                message += '数据库中没有用户记录';
+            }
+
+            // 显示用户'2'的评论
+            message += '\n\n用户\'2\'的评论:\n';
+            if (data.userReviews && data.userReviews.length > 0) {
+                message += `用户'2'有 ${data.userReviews.length} 条评论\n` +
+                      data.userReviews.map(review => `ID: ${review.id}, 用户名: '${review.userName}', 商品ID: ${review.productId}`).join('\n');
+            } else {
+                message += '用户\'2\'没有评论记录';
+            }
+
+            alert(message);
+        } catch (error) {
+            console.error('获取数据库信息失败:', error);
+            alert('获取数据库信息失败: ' + error.message);
+        }
+    }
+
+    // 调试用户评论
+    async function debugUserReviews() {
+        try {
+            const userName = localStorage.getItem('username');
+            console.log(`调试用户 ${userName} 的评论`);
+
+            const response = await fetch(`http://localhost:8080/debug/user-reviews/${userName}`);
+
+            if (!response.ok) {
+                console.error(`请求失败，状态码: ${response.status}`);
+                alert('获取用户评论信息失败');
+                return;
+            }
+
+            const data = await response.json();
+            console.log('用户评论调试信息:', data);
+
+            let message = `用户 '${userName}' 的评论信息:\n\n`;
+
+            // 显示JPA查询结果
+            message += 'JPA查询:\n';
+            if (data.reviews && data.reviews.length > 0) {
+                message += `找到 ${data.reviews.length} 条评论\n` +
+                      data.reviews.map(review => `ID: ${review.id}, 用户名: '${review.userName}', 商品ID: ${review.productId}`).join('\n');
+            } else {
+                message += '没有找到评论记录';
+            }
+
+            // 显示原生SQL查询结果
+            message += '\n\n原生SQL查询:\n';
+            if (data.rawReviews && data.rawReviews.length > 0) {
+                message += `找到 ${data.rawReviews.length} 条评论\n` +
+                      data.rawReviews.map(review => `ID: ${review.id}, 用户名: '${review.user_name}', 商品ID: ${review.product_id}`).join('\n');
+            } else {
+                message += '没有找到评论记录';
+            }
+
+            alert(message);
+        } catch (error) {
+            console.error('获取用户评论信息失败:', error);
+            alert('获取用户评论信息失败: ' + error.message);
+        }
+    }
+
+    // 点击模态框外部关闭模态框
+    document.getElementById('confirmModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeConfirmModal();
+        }
+    });
+
+    // 检查是否有新评论数据
+    function checkForNewReview() {
+        const lastReviewData = localStorage.getItem('lastReviewData');
+        if (lastReviewData) {
+            const reviewData = JSON.parse(lastReviewData);
+            const currentTime = new Date().getTime();
+            const reviewTime = reviewData.timestamp;
+
+            // 如果评论是在10分钟内添加的，则刷新页面
+            if (currentTime - reviewTime < 10 * 60 * 1000) {
+                console.log('检测到新评论，正在刷新页面...');
+                // 清除评论数据，防止重复刷新
+                localStorage.removeItem('lastReviewData');
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 页面加载时获取用户评论
+    window.onload = function() {
+        // 显示当前用户名
+        const userName = localStorage.getItem('username');
+        document.getElementById('currentUser').textContent = userName || '未登录';
+
+        // 如果有新评论，则强制刷新页面
+        if (checkForNewReview()) {
+            // 强制从服务器重新加载页面，绕过缓存
+            window.location.reload(true);
+        } else {
+            fetchUserReviews();
+        }
+    };
+</script>
+</body>
+</html>

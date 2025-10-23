@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录成功</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+        }
+
+        .action-buttons button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .action-buttons button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+<!--    <img class="logo" src="your_logo.png" alt="网站 logo">-->
+    <h2 class="welcome-message">欢迎您，登录成功！</h2>
+<!--    <div class="user-info">-->
+<!--        <p>您的用户名：<span id="username"></span></p>-->
+<!--    </div>-->
+    <div class="action-buttons">
+<!--        <button onclick="goToDashboard()">进入个人中心</button>-->
+        <a href="login.html" >登录</a>
+    </div>
+</div>
+
+<script>
+    // 假设这里从登录成功的参数或者其他地方获取用户名，这里简单模拟一个
+    // const username = "示例用户名";
+    // document.getElementById('username').textContent = username;
+    // const username = "示例用户名";
+    //
+    // function goToDashboard() {
+    //     // 跳转到个人中心页面，你需要替换为实际的页面路径
+    //     window.location.href = "dashboard.html";
+    // }
+
+    function logout() {
+        // 清除本地存储的用户信息
+        localStorage.removeItem('username');
+        // 跳转到登录页面
+        window.location.href = "login.html";
+    }
+</script>
+</body>
+
+</html>

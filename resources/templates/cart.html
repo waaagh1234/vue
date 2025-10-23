@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车 - 优品商城</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .cart-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cart-subtitle {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .continue-shopping {
+            display: inline-flex;
+            align-items: center;
+            color: #ff0036;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .continue-shopping:hover {
+            background-color: #f5f5f5;
+        }
+
+        .continue-shopping i {
+            margin-right: 5px;
+        }
+
+        .cart-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .cart-items {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .select-all-label {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-checkbox {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            margin-right: 15px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .cart-item:hover .item-image img {
+            transform: scale(1.05);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 10px;
+            color: #ff0036;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .item-original-price {
+            color: #999;
+            font-size: 14px;
+            text-decoration: line-through;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .quantity-input {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 14px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .favorite-btn {
+            color: #666;
+        }
+
+        .favorite-btn.active {
+            color: #ff0036;
+        }
+
+        .favorite-btn.active i {
+            color: #ff0036;
+        }
+
+        .cart-summary {
+            width: 300px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            align-self: flex-start;
+        }
+
+        .cart-summary-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 12px 0;
+            background: #ff0036;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #e60033;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-cart i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart-text {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-message p {
+            font-size: 16px;
+            color: #ff0036;
+            margin-bottom: 20px;
+        }
+
+        .error-message button {
+            padding: 8px 16px;
+            background: #ff0036;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .error-message button:hover {
+            background: #e60033;
+        }
+
+        @media (max-width: 768px) {
+            .cart-content {
+                flex-direction: column;
+            }
+
+            .cart-summary {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .item-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="cart-header">
+        <div>
+            <h1 class="cart-title">我的购物车</h1>
+            <p class="cart-subtitle">共 <span id="itemCount">0</span> 件商品</p>
+        </div>
+        <a href="mall.html" class="continue-shopping">
+            <i class="fas fa-arrow-left"></i> 返回商城
+        </a>
+    </div>
+
+    <div class="cart-content">
+        <div class="cart-items" id="cartItems">
+            <!-- 购物车商品将通过JavaScript动态添加 -->
+        </div>
+
+        <div class="cart-summary">
+            <h2 class="cart-summary-title">订单摘要</h2>
+            <div class="summary-item">
+                <span>商品总价</span>
+                <span id="subtotal">¥0.00</span>
+            </div>
+            <div class="summary-item">
+                <span>运费</span>
+                <span id="shipping">¥0.00</span>
+            </div>
+            <div class="summary-total">
+                <span>应付总额</span>
+                <span id="total">¥0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">立即结算</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 获取购物车数据
+    async function fetchCartItems() {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            renderEmptyCart('请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/cart/${userName}`);
+            if (!response.ok) {
+                throw new Error('获取购物车数据失败');
+            }
+            const cartItems = await response.json();
+
+            if (!cartItems || cartItems.length === 0) {
+                renderEmptyCart('购物车是空的');
+                return;
+            }
+
+            // 处理购物车数据
+            const processedItems = cartItems.map(item => ({
+                id: item.id,
+                productId: item.productId,
+                productName: item.productName,
+                price: item.price,
+                originalPrice: item.originalPrice,
+                quantity: item.quantity,
+                imagePath: item.imagePath,
+                isSelected: true,
+                isFavorite: item.isFavorite || false
+            }));
+
+            renderCart(processedItems);
+        } catch (error) {
+            console.error('获取购物车数据失败:', error);
+            renderError('获取购物车数据失败');
+        }
+    }
+
+    // 渲染购物车
+    function renderCart(cartItems) {
+        const cartItemsContainer = document.getElementById('cartItems');
+        document.getElementById('itemCount').textContent = cartItems.length;
+
+        // 添加全选功能
+        let selectAllHtml = `
+                <div class="select-all-container">
+                    <input type="checkbox" id="selectAll" class="item-checkbox" checked
+                           onchange="toggleSelectAll()">
+                    <label for="selectAll" class="select-all-label">全选</label>
+                </div>
+            `;
+
+        // 渲染商品列表
+        let itemsHtml = cartItems.map(item => {
+            // 检查 price 和 originalPrice 是否为 undefined 或 null
+            const price = item.price !== undefined && item.price !== null ? item.price : 0;
+            const originalPrice = item.originalPrice !== undefined && item.originalPrice !== null ? item.originalPrice : 0;
+
+            return `
+                    <div class="cart-item" data-id="${item.id}">
+                        <input type="checkbox" class="item-checkbox" ${item.isSelected ? 'checked' : ''}
+                               onchange="toggleSelect(${item.id})">
+                        <div class="item-image">
+                            <img src="${item.imagePath}" alt="${item.productName}">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-name">${item.productName}</div>
+                            <div class="item-price">
+                                ¥${price.toFixed(2)}
+                                <span class="item-original-price">¥${originalPrice.toFixed(2)}</span>
+                            </div>
+                            <div class="item-quantity">
+                                <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                <input type="number" class="quantity-input" value="${item.quantity}"
+                                       onchange="updateQuantity(${item.id}, 0, this.value)" min="1">
+                                <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                            <div class="item-actions">
+                                <span class="action-btn favorite-btn ${item.isFavorite ? 'active' : ''}"
+                                      onclick="toggleFavorite(${item.productId})">
+                                    <i class="fas fa-heart"></i>${item.isFavorite ? '取消收藏' : '收藏'}
+                                </span>
+                                <span class="action-btn" onclick="removeItem(${item.id})">
+                                    <i class="fas fa-trash"></i>删除
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }).join('');
+
+        cartItemsContainer.innerHTML = selectAllHtml + itemsHtml;
+        updateSummary(cartItems);
+    }
+
+    // 渲染空购物车
+    function renderEmptyCart(message) {
+        const cartItemsContainer = document.getElementById('cartItems');
+        document.getElementById('itemCount').textContent = '0';
+
+        cartItemsContainer.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p class="empty-cart-text">${message}</p>
+                    <a href="mall.html" class="continue-shopping">
+                        <i class="fas fa-arrow-left"></i> 返回商城
+                    </a>
+                </div>
+            `;
+    }
+
+    // 渲染错误信息
+    function renderError(message) {
+        const cartItemsContainer = document.getElementById('cartItems');
+        cartItemsContainer.innerHTML = `
+                <div class="error-message">
+                    <p>${message}</p>
+                    <button onclick="fetchCartItems()">重试</button>
+                </div>
+            `;
+    }
+
+    // 更新商品数量
+    async function updateQuantity(id, change, value) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        const cartItem = document.querySelector(`.cart-item[data-id="${id}"]`);
+        const quantityInput = cartItem.querySelector('.quantity-input');
+        let quantity = parseInt(quantityInput.value);
+
+        if (change) {
+            quantity += change;
+        } else if (value) {
+            quantity = parseInt(value);
+        }
+
+        quantity = Math.max(1, quantity);
+
+        try {
+            const response = await fetch('http://localhost:8080/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: id,
+                    userName: userName,
+                    quantity: quantity
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('更新数量失败');
+            }
+
+            // 重新获取购物车数据
+            fetchCartItems();
+        } catch (error) {
+            console.error('更新数量失败:', error);
+            alert('更新数量失败，请稍后重试');
+        }
+    }
+
+    // 切换商品选择状态
+    function toggleSelect(id) {
+        const checkbox = document.querySelector(`.cart-item[data-id="${id}"] .item-checkbox`);
+        const isSelected = checkbox.checked;
+
+        // 更新所有商品的选中状态
+        const allItems = Array.from(document.querySelectorAll('.cart-item'));
+        const cartItems = allItems.map(item => {
+            const itemId = parseInt(item.dataset.id);
+            const itemCheckbox = item.querySelector('.item-checkbox');
+            const quantityInput = item.querySelector('.quantity-input');
+
+            return {
+                id: itemId,
+                isSelected: itemId === id ? isSelected : itemCheckbox.checked,
+                quantity: parseInt(quantityInput.value),
+                price: parseFloat(item.querySelector('.item-price').textContent.replace('¥', '')),
+                originalPrice: parseFloat(item.querySelector('.item-original-price').textContent.replace('¥', ''))
+            };
+        });
+
+        // 更新全选框状态
+        document.getElementById('selectAll').checked = cartItems.every(item => item.isSelected);
+
+        // 更新订单摘要
+        updateSummary(cartItems);
+    }
+
+    // 全选/取消全选
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.cart-item .item-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+
+        // 获取所有商品信息并更新订单摘要
+        const allItems = Array.from(document.querySelectorAll('.cart-item'));
+        const cartItems = allItems.map(item => {
+            const quantityInput = item.querySelector('.quantity-input');
+
+            return {
+                id: parseInt(item.dataset.id),
+                isSelected: selectAll.checked,
+                quantity: parseInt(quantityInput.value),
+                price: parseFloat(item.querySelector('.item-price').textContent.replace('¥', '')),
+                originalPrice: parseFloat(item.querySelector('.item-original-price').textContent.replace('¥', ''))
+            };
+        });
+
+        updateSummary(cartItems);
+    }
+
+    // 切换收藏状态
+    async function toggleFavorite(productId) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            // 检查当前收藏状态
+            const favoriteBtn = document.querySelector(`.favorite-btn[onclick="toggleFavorite(${productId})"]`);
+            const isFavorite = favoriteBtn.classList.contains('active');
+
+            let url, method, data;
+            if (isFavorite) {
+                // 取消收藏
+                url = `http://localhost:8080/user-favorites/${userName}/${productId}`;
+                method = 'DELETE';
+            } else {
+                // 添加收藏
+                url = 'http://localhost:8080/user-favorites/add';
+                method = 'POST';
+                data = {
+                    userName: userName,
+                    productId: productId
+                };
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data ? JSON.stringify(data) : null
+            });
+
+            if (!response.ok) {
+                throw new Error('操作收藏失败');
+            }
+
+            favoriteBtn.classList.toggle('active');
+            favoriteBtn.innerHTML = `<i class="fas fa-heart"></i>${isFavorite ? '收藏' : '取消收藏'}`;
+        } catch (error) {
+            console.error('操作收藏失败:', error);
+            alert('操作收藏失败，请稍后重试');
+        }
+    }
+
+    // 删除商品
+    async function removeItem(id) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            // 获取商品ID
+            const cartItem = document.querySelector(`.cart-item[data-id="${id}"]`);
+            if (!cartItem) {
+                throw new Error('找不到购物车商品');
+            }
+
+            // 从购物车中获取商品信息
+            const response = await fetch(`http://localhost:8080/cart/${userName}`);
+            if (!response.ok) {
+                throw new Error('获取购物车数据失败');
+            }
+            const cartItems = await response.json();
+
+            // 找到对应的商品
+            const item = cartItems.find(item => item.id === id);
+            if (!item) {
+                throw new Error('找不到购物车商品');
+            }
+
+            const productId = item.productId;
+            console.log(`删除购物车商品，ID: ${id}, 商品ID: ${productId}`);
+
+            // 调用正确的API删除商品
+            const deleteResponse = await fetch(`http://localhost:8080/cart/remove/${userName}/${productId}`, {
+                method: 'DELETE'
+            });
+
+            if (!deleteResponse.ok) {
+                throw new Error('删除商品失败');
+            }
+
+            // 重新获取购物车数据
+            fetchCartItems();
+        } catch (error) {
+            console.error('删除商品失败:', error);
+            alert('删除商品失败，请稍后重试');
+        }
+    }
+
+    // 更新订单摘要
+    function updateSummary(cartItems) {
+        let subtotal = 0;
+        let shipping = 0;
+
+        cartItems.forEach(item => {
+            if (item.isSelected) {
+                subtotal += item.price * item.quantity;
+            }
+        });
+
+        document.getElementById('subtotal').textContent = `¥${subtotal.toFixed(2)}`;
+        document.getElementById('shipping').textContent = `¥${shipping.toFixed(2)}`;
+        document.getElementById('total').textContent = `¥${(subtotal + shipping).toFixed(2)}`;
+    }
+
+    // 结算功能
+    async function checkout() {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        const allItems = Array.from(document.querySelectorAll('.cart-item'));
+        const selectedItems = allItems.filter(item => {
+            const checkbox = item.querySelector('.item-checkbox');
+            return checkbox.checked;
+        }).map(item => {
+            const itemId = parseInt(item.dataset.id);
+            const quantityInput = item.querySelector('.quantity-input');
+
+            return {
+                id: itemId,
+                quantity: parseInt(quantityInput.value)
+            };
+        });
+
+        if (selectedItems.length === 0) {
+            alert('请选择要结算的商品');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/cart/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userName: userName,
+                    items: selectedItems
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('结算失败');
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // 重新获取购物车数据
+                fetchCartItems();
+                // 显示收件人信息表单
+                showShippingModal(result.orderId);
+            } else {
+                throw new Error(result.message || '结算失败');
+            }
+        } catch (error) {
+            console.error('结算失败:', error);
+            alert('结算失败，请稍后重试');
+        }
+    }
+
+    // 页面加载时获取购物车数据
+    window.onload = fetchCartItems;
+</script>
+<!-- 收件人信息表单模态框 -->
+<div class="modal" id="shippingInfoModal" tabindex="-1" role="dialog" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+    <div class="modal-dialog" role="document" style="margin: 10% auto; max-width: 500px; background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <div class="modal-content" style="padding: 20px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                <h5 class="modal-title" style="font-size: 18px; font-weight: 600;">填写收件人信息</h5>
+                <button type="button" class="close" onclick="closeShippingModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="shippingInfoForm">
+                    <input type="hidden" id="orderId" name="orderId">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="recipientName" style="display: block; margin-bottom: 5px; font-weight: 500;">收件人姓名</label>
+                        <input type="text" class="form-control" id="recipientName" name="recipientName" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="phoneNumber" style="display: block; margin-bottom: 5px; font-weight: 500;">联系电话</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="address" style="display: block; margin-bottom: 5px; font-weight: 500;">收货地址</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                <button type="button" class="btn-secondary" onclick="closeShippingModal()" style="padding: 8px 16px; background: #ccc; color: #333; border: none; border-radius: 4px; margin-right: 10px; cursor: pointer;">取消</button>
+                <button type="button" class="btn-primary" onclick="submitShippingInfo()" style="padding: 8px 16px; background: #ff0036; color: white; border: none; border-radius: 4px; cursor: pointer;">确认提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 显示收件人信息模态框
+    function showShippingModal(orderId) {
+        console.log('显示收件人信息模态框，订单号:', orderId);
+        document.getElementById('orderId').value = orderId;
+        document.getElementById('shippingInfoModal').style.display = 'block';
+    }
+
+    // 关闭收件人信息模态框
+    async function closeShippingModal() {
+        const orderId = document.getElementById('orderId').value;
+        if (orderId) {
+            try {
+                // 取消订单
+                const response = await fetch(`http://localhost:8080/api/orders/cancel/${orderId}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    console.error('取消订单失败');
+                }
+
+                console.log('用户取消了订单，订单号:', orderId);
+            } catch (error) {
+                console.error('取消订单出错:', error);
+            }
+        }
+        document.getElementById('shippingInfoModal').style.display = 'none';
+    }
+
+    // 提交收件人信息
+    async function submitShippingInfo() {
+        const orderId = document.getElementById('orderId').value;
+        const recipientName = document.getElementById('recipientName').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const address = document.getElementById('address').value.trim();
+
+        if (!recipientName) {
+            alert('请输入收件人姓名');
+            return;
+        }
+
+        if (!phoneNumber) {
+            alert('请输入联系电话');
+            return;
+        }
+
+        if (!address) {
+            alert('请输入收货地址');
+            return;
+        }
+
+        try {
+            console.log('提交收件人信息:', {
+                orderId: orderId,
+                recipientName: recipientName,
+                phoneNumber: phoneNumber,
+                address: address
+            });
+
+            const formData = new FormData();
+            formData.append('orderId', orderId);
+            formData.append('recipientName', recipientName);
+            formData.append('phoneNumber', phoneNumber);
+            formData.append('address', address);
+
+            const response = await fetch('http://localhost:8080/api/shipping', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('提交收件人信息失败');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('订购成功！您的订单已提交');
+                closeShippingModal();
+                // 跳转到订单页面
+                window.location.href = 'records.html';
+            } else {
+                throw new Error(result.message || '提交收件人信息失败');
+            }
+        } catch (error) {
+            console.error('提交收件人信息失败:', error);
+            alert('提交收件人信息失败，请稍后重试');
+        }
+    }
+</script>
+</body>
+
+</html>

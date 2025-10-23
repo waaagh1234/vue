@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片功能测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ff0036;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      color: #666;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .image-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .image-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .image-card .name {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .image-card .status {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .info-box {
+      background-color: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .info-box h3 {
+      color: #1976D2;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .info-box ul {
+      margin-left: 20px;
+    }
+
+    .info-box li {
+      margin-bottom: 5px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vue商城 - 图片功能测试</h1>
+
+    <div class="info-box">
+      <h3>📋 测试说明</h3>
+      <ul>
+        <li>本页面用于测试图片资源是否正确迁移到Vue项目</li>
+        <li>所有图片应该能够正常显示</li>
+        <li>图片路径已从 resources/templates/images/ 复制到 src/assets/images/</li>
+        <li>Vue组件已集成图片处理工具 imageHelper.js</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>本地图片资源列表</h2>
+      <div class="image-grid" id="imageGrid">
+        <!-- 图片将通过JavaScript动态加载 -->
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>✅ 已更新的组件</h3>
+      <ul>
+        <li>Mall.vue - 商城首页</li>
+        <li>SearchResults.vue - 搜索结果</li>
+        <li>ProductDetail.vue - 商品详情</li>
+        <li>Cart.vue - 购物车</li>
+        <li>Favorites.vue - 收藏列表</li>
+        <li>Records.vue - 购买记录</li>
+        <li>MyReviews.vue - 我的评论</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // 图片列表
+    const images = [
+      { name: '1.jpg', path: 'src/assets/images/1.jpg' },
+      { name: '2ed5e0d4b82e9675597f89042ab28360~480x480.jpg', path: 'src/assets/images/2ed5e0d4b82e9675597f89042ab28360~480x480.jpg' },
+      { name: '6a3b351d572e05336ddd94e9506df233.jpg', path: 'src/assets/images/6a3b351d572e05336ddd94e9506df233.jpg' },
+      { name: 'OIP.jpg', path: 'src/assets/images/OIP.jpg' },
+      { name: 'applemac.jpg', path: 'src/assets/images/applemac.jpg' },
+      { name: 'bowl.jpg', path: 'src/assets/images/bowl.jpg' },
+      { name: 'img_1.png', path: 'src/assets/images/img_1.png' },
+      { name: 'invidagpu.jpg', path: 'src/assets/images/invidagpu.jpg' },
+      { name: 'laptop.jpg', path: 'src/assets/images/laptop.jpg' },
+      { name: 'lunchbox.jpg', path: 'src/assets/images/lunchbox.jpg' },
+      { name: 'opener.jpg', path: 'src/assets/images/opener.jpg' },
+      { name: 'samsung.jpg', path: 'src/assets/images/samsung.jpg' }
+    ];
+
+    const imageGrid = document.getElementById('imageGrid');
+
+    images.forEach(image => {
+      const card = document.createElement('div');
+      card.className = 'image-card';
+      
+      const img = document.createElement('img');
+      img.src = image.path;
+      img.alt = image.name;
+      
+      // 检测图片是否加载成功
+      img.onload = function() {
+        const status = card.querySelector('.status');
+        status.textContent = '✓ 加载成功';
+        status.className = 'status success';
+      };
+      
+      img.onerror = function() {
+        const status = card.querySelector('.status');
+        status.textContent = '✗ 加载失败';
+        status.className = 'status error';
+        img.src = 'https://via.placeholder.com/200x180?text=Image+Not+Found';
+      };
+      
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = image.name;
+      
+      const status = document.createElement('div');
+      status.className = 'status';
+      status.textContent = '加载中...';
+      
+      card.appendChild(img);
+      card.appendChild(name);
+      card.appendChild(status);
+      imageGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
+

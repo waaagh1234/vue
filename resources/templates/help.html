@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助中心 - 购物无忧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        neutral: {
+                            100: '#F5F7FA',
+                            200: '#E4E6EB',
+                            300: '#C9CDD4',
+                            400: '#86909C',
+                            500: '#4E5969',
+                            600: '#272E3B',
+                            700: '#1D2129',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+                    }
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-height {
+                transition: max-height 0.5s ease;
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #165DFF 0%, #0040C9 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700">
+<!-- 导航栏 -->
+<header class="sticky top-0 z-50 bg-white shadow-sm transition-all duration-300">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <a href="index.html" class="text-primary text-2xl font-bold flex items-center">
+                <i class="fa fa-shopping-bag mr-2"></i>
+                <span>购物无忧</span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-6">
+            <a href="mall.html" class="text-neutral-600 hover:text-primary transition-colors">首页</a>
+<!--            <a href="products.html" class="text-neutral-600 hover:text-primary transition-colors">商品分类</a>-->
+            <a href="cart.html" class="text-neutral-600 hover:text-primary transition-colors relative">
+                <i class="fa fa-shopping-cart"></i>
+                <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+            </a>
+<!--            <a href="user.html" class="text-neutral-600 hover:text-primary transition-colors">-->
+<!--                <i class="fa fa-user"></i>-->
+<!--            </a>-->
+        </div>
+
+        <div class="md:hidden">
+            <button class="text-neutral-600 focus:outline-none" id="mobile-menu-button">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 移动端菜单 -->
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+        <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+            <a href="index.html" class="text-neutral-600 hover:text-primary transition-colors py-2">首页</a>
+            <a href="products.html" class="text-neutral-600 hover:text-primary transition-colors py-2">商品分类</a>
+            <a href="cart.html" class="text-neutral-600 hover:text-primary transition-colors py-2 relative">
+                <i class="fa fa-shopping-cart mr-2"></i>购物车
+                <span class="absolute right-0 bg-secondary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+            </a>
+            <a href="user.html" class="text-neutral-600 hover:text-primary transition-colors py-2">
+                <i class="fa fa-user mr-2"></i>我的账户
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- 英雄区域 -->
+<section class="gradient-bg text-white py-16 md:py-24">
+    <div class="container mx-auto px-4">
+        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-center mb-4 text-shadow">帮助中心</h1>
+        <p class="text-[clamp(1rem,2vw,1.25rem)] text-center max-w-3xl mx-auto opacity-90">
+            查找常见问题的解答，或联系我们的客服团队获取进一步帮助
+        </p>
+    </div>
+</section>
+
+<!-- 搜索框 -->
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="relative">
+                <input type="text"
+                       placeholder="搜索常见问题..."
+                       class="w-full pl-12 pr-4 py-3 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                       aria-label="搜索帮助中心">
+                <i class="fa fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400"></i>
+            </div>
+            <p class="text-neutral-400 text-sm mt-2 text-center">
+                热门搜索: <a href="#delivery" class="text-primary hover:underline">配送时间</a> ·
+                <a href="#payment" class="text-primary hover:underline">支付方式</a> ·
+                <a href="#return" class="text-primary hover:underline">退换货政策</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- 主要内容区域 -->
+<main class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- 侧边导航 -->
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-card p-6 sticky top-24">
+                <h2 class="text-lg font-bold text-neutral-700 mb-4">帮助主题</h2>
+                <nav class="space-y-2">
+                    <a href="#account" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-user-circle mr-2 text-neutral-500"></i>账户管理
+                    </a>
+                    <a href="#order" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-shopping-basket mr-2 text-neutral-500"></i>订单问题
+                    </a>
+                    <a href="#payment" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-credit-card mr-2 text-neutral-500"></i>支付方式
+                    </a>
+                    <a href="#delivery" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-truck mr-2 text-neutral-500"></i>配送信息
+                    </a>
+                    <a href="#return" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-exchange-alt mr-2 text-neutral-500"></i>退换货政策
+                    </a>
+                    <a href="#product" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-tags mr-2 text-neutral-500"></i>商品信息
+                    </a>
+                    <a href="#promotion" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-gift mr-2 text-neutral-500"></i>促销活动
+                    </a>
+                    <a href="#contact" class="block py-2 px-3 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <i class="fa fa-headphones mr-2 text-neutral-500"></i>联系客服
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- FAQ 内容 -->
+        <div class="lg:col-span-3 space-y-8">
+            <!-- 账户管理 -->
+            <section id="account" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-user-circle text-primary mr-3"></i>账户管理
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何注册新账户？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">您可以通过以下步骤注册新账户：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>点击网站顶部导航栏中的"注册"按钮</li>
+                                <li>填写您的手机号码或电子邮箱地址</li>
+                                <li>设置6-20位包含字母和数字的登录密码</li>
+                                <li>输入验证码并点击"注册"按钮</li>
+                                <li>完成注册后，您可以完善个人信息并开始购物</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题2 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">忘记密码如何重置？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">如果您忘记了密码，可以按照以下步骤重置：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>在登录页面点击"忘记密码"链接</li>
+                                <li>输入注册时使用的手机号码或电子邮箱</li>
+                                <li>系统将发送验证码到您的手机或邮箱</li>
+                                <li>输入收到的验证码</li>
+                                <li>设置新密码并确认</li>
+                                <li>密码重置成功后，使用新密码登录</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题3 -->
+                    <div>
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何修改账户绑定的手机号码？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">修改绑定的手机号码步骤如下：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>登录您的账户，进入"个人中心"</li>
+                                <li>点击"账户安全"选项</li>
+                                <li>在"手机号码"一栏点击"修改"</li>
+                                <li>系统将发送验证码到当前绑定的手机</li>
+                                <li>输入验证码后，输入新的手机号码</li>
+                                <li>新手机将收到验证码，输入后确认修改</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 订单问题 -->
+            <section id="order" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-shopping-basket text-primary mr-3"></i>订单问题
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何查看我的订单状态？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">您可以通过以下方式查看订单状态：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>登录您的账户，进入"我的订单"</li>
+                                <li>在订单列表中可以查看所有订单的当前状态</li>
+                                <li>点击具体订单可以查看详细的订单进程</li>
+                                <li>您也可以通过订单短信通知了解最新动态</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题2 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何取消未付款的订单？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">未付款的订单可以自行取消，步骤如下：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>进入"我的订单"页面</li>
+                                <li>找到需要取消的未付款订单</li>
+                                <li>点击"取消订单"按钮</li>
+                                <li>选择取消原因后确认</li>
+                                <li>订单取消后，系统会自动释放库存</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题3 -->
+                    <div>
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何申请订单退款？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">申请订单退款的流程如下：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>进入"我的订单"，找到需要退款的订单</li>
+                                <li>点击"申请退款"按钮</li>
+                                <li>选择退款原因，并填写退款说明</li>
+                                <li>如需退货，请选择"需要退货"并按指引操作</li>
+                                <li>提交申请后，客服将在1-3个工作日内处理</li>
+                                <li>退款成功后，款项将按原支付方式返还</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 支付方式 -->
+            <section id="payment" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-credit-card text-primary mr-3"></i>支付方式
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">你们接受哪些支付方式？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">我们接受以下支付方式：</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>在线支付：支付宝、微信支付、银联在线</li>
+                                <li>银行卡支付：储蓄卡和信用卡</li>
+                                <li>货到付款：部分地区支持</li>
+                                <li>账户余额支付：使用您账户中的余额支付</li>
+                                <li>优惠券和礼品卡：可与其他支付方式组合使用</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 问题2 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">支付失败怎么办？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">如果支付失败，请尝试以下解决方法：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>检查您的网络连接是否稳定</li>
+                                <li>确认支付账户余额充足或信用额度足够</li>
+                                <li>尝试更换支付方式</li>
+                                <li>清除浏览器缓存后重试</li>
+                                <li>如仍失败，请联系我们的客服团队</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题3 -->
+                    <div>
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何使用优惠券和礼品卡？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">使用优惠券和礼品卡的步骤如下：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>在结算页面，找到"优惠券/礼品卡"输入框</li>
+                                <li>输入优惠券码或礼品卡卡号</li>
+                                <li>点击"应用"按钮</li>
+                                <li>系统将自动计算折扣后的金额</li>
+                                <li>每张订单只能使用一张优惠券，但可以叠加使用多张礼品卡</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 配送信息 -->
+            <section id="delivery" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-truck text-primary mr-3"></i>配送信息
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">订单多久能送达？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">配送时间取决于您选择的配送方式和收货地址：</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>标准配送：大部分地区2-5个工作日</li>
+                                <li>次日达：部分城市提供，下单后次日送达</li>
+                                <li>当日达：仅限部分核心城区，上午10点前下单当日送达</li>
+                                <li>偏远地区可能需要额外的配送时间</li>
+                                <li>您可以在订单详情中查看预计送达时间</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 问题2 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何查询物流信息？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">您可以通过以下方式查询物流信息：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>登录账户，在"我的订单"中点击具体订单</li>
+                                <li>在订单详情页查看最新物流状态</li>
+                                <li>点击"查看物流"按钮，可进入物流公司官网查询</li>
+                                <li>我们也会通过短信通知您物流状态的更新</li>
+                                <li>部分订单支持实时地图跟踪功能</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题3 -->
+                    <div>
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">可以修改配送地址吗？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">在订单发货前，您可以修改配送地址：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>登录账户，进入"我的订单"</li>
+                                <li>找到需要修改地址的未发货订单</li>
+                                <li>点击"修改配送信息"按钮</li>
+                                <li>更新新的收货地址和联系信息</li>
+                                <li>确认保存后，新地址将用于订单配送</li>
+                            </ol>
+                            <p class="text-neutral-600 mt-2">如果订单已发货，建议您联系物流公司修改配送地址，或联系我们的客服协助处理。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 退换货政策 -->
+            <section id="return" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-exchange-alt text-primary mr-3"></i>退换货政策
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">退换货的条件是什么？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">我们提供以下退换货政策：</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>商品质量问题：自收到商品7天内可申请退换货</li>
+                                <li>商品与描述不符：可申请全额退款</li>
+                                <li>不满意可退货：部分商品支持7天无理由退货（需保持商品原状）</li>
+                                <li>定制商品：通常不支持退换货，特殊情况请联系客服</li>
+                                <li>食品、贴身用品等特殊商品：非质量问题不支持退换</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 问题2 -->
+                    <div class="border-b border-neutral-200 pb-4">
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">如何申请退换货？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">申请退换货的步骤如下：</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1">
+                                <li>登录账户，进入"我的订单"</li>
+                                <li>找到需要退换货的订单，点击"申请售后"</li>
+                                <li>选择"退货"或"换货"，并填写原因</li>
+                                <li>上传商品问题照片（如有）</li>
+                                <li>提交申请，等待客服审核</li>
+                                <li>审核通过后，按指引寄回商品（如需）</li>
+                                <li>收到退回商品后，我们将处理退款或重新发货</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- 问题3 -->
+                    <div>
+                        <button class="flex justify-between items-center w-full text-left focus:outline-none" onclick="toggleFaq(this)">
+                            <span class="font-medium text-lg">退换货运费由谁承担？</span>
+                            <i class="fa fa-chevron-down text-neutral-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer mt-3 hidden">
+                            <p class="text-neutral-600">退换货运费承担规则如下：</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>因商品质量问题导致的退换货：运费由我们承担</li>
+                                <li>因商品与描述不符导致的退换货：运费由我们承担</li>
+                                <li>7天无理由退货：运费由您承担</li>
+                                <li>使用运费险的订单：按保险公司规定处理</li>
+                                <li>特殊情况请联系客服协商解决</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 联系客服 -->
+            <section id="contact" class="bg-white rounded-xl shadow-card p-6 transform transition-all hover:shadow-hover">
+                <h2 class="text-xl font-bold text-neutral-700 mb-6 flex items-center">
+                    <i class="fa fa-headphones text-primary mr-3"></i>联系客服
+                </h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-neutral-600">如果您无法在帮助中心找到所需的答案，可以通过以下方式联系我们的客服团队：</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                                <h3 class="font-medium text-neutral-700 mb-2 flex items-center">
+                                    <i class="fa fa-phone text-primary mr-2"></i>电话客服
+                                </h3>
+                                <p class="text-neutral-600">400-123-4567</p>
+                                <p class="text-sm text-neutral-500 mt-1">工作时间: 9:00-21:00 (周一至周日)</p>
+                            </div>
+
+                            <div class="bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                                <h3 class="font-medium text-neutral-700 mb-2 flex items-center">
+                                    <i class="fa fa-comments text-primary mr-2"></i>在线客服
+                                </h3>
+                                <p class="text-neutral-600">点击网站右下角的"在线客服"图标</p>
+                                <p class="text-sm text-neutral-500 mt-1">工作时间: 9:00-22:00 (周一至周日)</p>
+                            </div>
+
+                            <div class="bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                                <h3 class="font-medium text-neutral-700 mb-2 flex items-center">
+                                    <i class="fa fa-envelope text-primary mr-2"></i>电子邮件
+                                </h3>
+                                <p class="text-neutral-600">support@example.com</p>
+                                <p class="text-sm text-neutral-500 mt-1">我们会在24小时内回复您的邮件</p>
+                            </div>
+
+                            <div class="bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                                <h3 class="font-medium text-neutral-700 mb-2 flex items-center">
+                                    <i class="fa fa-map-marker text-primary mr-2"></i>线下客服中心
+                                </h3>
+                                <p class="text-neutral-600">北京市朝阳区建国路88号</p>
+                                <p class="text-sm text-neutral-500 mt-1">工作时间: 10:00-18:00 (周一至周六)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- 帮助反馈 -->
+<section class="bg-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-xl font-bold text-neutral-700 mb-4">帮助是否有帮助？</h2>
+            <p class="text-neutral-600 mb-6">如果您对我们的帮助中心有任何建议或意见，请告诉我们</p>
+
+            <div class="flex justify-center space-x-4">
+                <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full transition-colors flex items-center">
+                    <i class="fa fa-thumbs-up mr-2"></i>有帮助
+                </button>
+                <button class="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 px-6 py-2 rounded-full transition-colors flex items-center">
+                    <i class="fa fa-thumbs-down mr-2"></i>无帮助
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="bg-neutral-700 text-white pt-12 pb-6">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <h3 class="text-lg font-bold mb-4">购物无忧</h3>
+                <p class="text-neutral-300 mb-4">提供优质的商品和服务，让您的购物体验更加愉悦</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-neutral-300 hover:text-white transition-colors">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-neutral-300 hover:text-white transition-colors">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-neutral-300 hover:text-white transition-colors">
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-neutral-300 hover:text-white transition-colors">
+                        <i class="fa fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold mb-4">快速链接</h3>
+                <ul class="space-y-2">
+                    <li><a href="index.html" class="text-neutral-300 hover:text-white transition-colors">首页</a></li>
+                    <li><a href="products.html" class="text-neutral-300 hover:text-white transition-colors">商品分类</a></li>
+                    <li><a href="cart.html" class="text-neutral-300 hover:text-white transition-colors">购物车</a></li>
+                    <li><a href="user.html" class="text-neutral-300 hover:text-white transition-colors">我的账户</a></li>
+                    <li><a href="help.html" class="text-neutral-300 hover:text-white transition-colors">帮助中心</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold mb-4">联系我们</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <i class="fa fa-map-marker mt-1 mr-3 text-neutral-400"></i>
+                        <span class="text-neutral-300">北京市朝阳区建国路88号</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-phone mr-3 text-neutral-400"></i>
+                        <span class="text-neutral-300">400-123-4567</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-envelope mr-3 text-neutral-400"></i>
+                        <span class="text-neutral-300">support@example.com</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold mb-4">订阅我们</h3>
+                <p class="text-neutral-300 mb-4">订阅我们的电子邮件，获取最新的促销和优惠信息</p>
+                <div class="flex">
+                    <input type="email" placeholder="您的邮箱地址" class="px-4 py-2 rounded-l-lg focus:outline-none text-neutral-700 w-full">
+                    <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                        订阅
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-neutral-600 pt-6">
+            <p class="text-center text-neutral-400 text-sm">© 2025 购物无忧. 保留所有权利.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 移动端菜单切换
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // FAQ 切换
+    function toggleFaq(button) {
+        const answer = button.nextElementSibling;
+        const icon = button.querySelector('i');
+
+        // 切换回答的显示/隐藏
+        answer.classList.toggle('hidden');
+
+        // 切换图标旋转
+        if (!answer.classList.contains('hidden')) {
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            icon.style.transform = 'rotate(0)';
+        }
+    }
+
+    // 导航栏滚动效果
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 10) {
+            header.classList.add('shadow-md');
+            header.classList.add('py-2');
+            header.classList.remove('py-3');
+        } else {
+            header.classList.remove('shadow-md');
+            header.classList.add('py-3');
+            header.classList.remove('py-2');
+        }
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+
+                // 如果是移动端，点击后关闭菜单
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

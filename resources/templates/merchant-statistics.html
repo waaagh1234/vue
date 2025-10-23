@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售统计 - 优品商城</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container-fluid {
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #3d5165;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: #34495e;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+
+        .stats-card {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card-title {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stats-card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .stats-card-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .stats-card-icon {
+            font-size: 2rem;
+            color: #007bff;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .logout-btn {
+            margin-top: 20px;
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .status-completed {
+            color: #28a745;
+        }
+
+        .status-processing {
+            color: #007bff;
+        }
+
+        .status-cancelled {
+            color: #dc3545;
+        }
+
+        .status-pending {
+            color: #808080;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>商家管理后台</h2>
+                <p>当前用户: <span id="currentMerchant">优品商城</span></p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item" onclick="window.location.href='merchant-dashboard.html'">
+                    <i class="fas fa-box"></i>
+                    <span>商品管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='merchant-orders.html'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>订单管理</span>
+                </div>
+                <div class="menu-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>销售统计</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>账户设置</span>
+                </div>
+                <div class="menu-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出登录</span>
+                </div>
+            </div>
+        </div>
+
+            <div class="main-content">
+                <div class="page-header d-flex justify-content-between align-items-center">
+                    <h1>销售统计</h1>
+                    <div class="filter-section">
+                        <select id="timeRangeFilter" class="form-control" onchange="updateCharts()">
+                            <option value="all">全部时间</option>
+                            <option value="today">今天</option>
+                            <option value="week">本周</option>
+                            <option value="month">本月</option>
+                            <option value="year">今年</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <!-- 总计统计 -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">总订单数</div>
+                                    <div class="stats-card-value" id="totalOrders">0</div>
+                                </div>
+                                <div class="stats-card-icon">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">总销售额</div>
+                                    <div class="stats-card-value" id="totalSales">¥0</div>
+                                </div>
+                                <div class="stats-card-icon">
+                                    <i class="fas fa-yen-sign"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 各状态订单统计 -->
+                <div class="row">
+                    <!-- 已完成订单 -->
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">已完成订单</div>
+                                    <div class="stats-card-value" id="completedOrders">0</div>
+                                    <div class="stats-card-subtitle" id="completedAmount">¥0</div>
+                                </div>
+                                <div class="stats-card-icon status-completed">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 处理中订单 -->
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">处理中订单</div>
+                                    <div class="stats-card-value" id="processingOrders">0</div>
+                                    <div class="stats-card-subtitle" id="processingAmount">¥0</div>
+                                </div>
+                                <div class="stats-card-icon status-processing">
+                                    <i class="fas fa-spinner"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 未处理订单 -->
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">未处理订单</div>
+                                    <div class="stats-card-value" id="pendingOrders">0</div>
+                                    <div class="stats-card-subtitle" id="pendingAmount">¥0</div>
+                                </div>
+                                <div class="stats-card-icon status-pending">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 取消订单 -->
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="stats-card-title">取消订单</div>
+                                    <div class="stats-card-value" id="cancelledOrders">0</div>
+                                    <div class="stats-card-subtitle" id="cancelledAmount">¥0</div>
+                                </div>
+                                <div class="stats-card-icon status-cancelled">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表 -->
+                <div class="row">
+                    <!-- 订单状态饼图 -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                订单状态分布
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="orderStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 订单金额饼图 -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                订单金额分布
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="orderAmountChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 月度销售趋势 -->
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                月度销售趋势
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="monthlySalesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 订单状态金额统计 -->
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                订单状态金额统计
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="orderStatusAmountChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('merchantId');
+            localStorage.removeItem('merchantName');
+            localStorage.removeItem('merchantLoggedIn');
+            window.location.href = 'merchant-login.html';
+        }
+
+        // 初始化图表对象
+        window.orderStatusChart = null;
+        window.orderAmountChart = null;
+        window.monthlySalesChart = null;
+        window.orderStatusAmountChart = null;
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+
+            // 检查登录状态
+            if (!checkMerchantLogin()) {
+                return;
+            }
+
+            // 显示当前用户名
+            const username = localStorage.getItem('merchantName');
+            if (username) {
+                document.getElementById('currentMerchant').textContent = username;
+            }
+
+            // 确保Chart.js已加载
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js未加载，正在尝试加载...');
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+                script.onload = function() {
+                    console.log('Chart.js加载成功');
+                    // 加载订单数据
+                    fetchMerchantOrders();
+                };
+                script.onerror = function() {
+                    console.error('Chart.js加载失败');
+                    alert('Chart.js加载失败，请刷新页面重试');
+                };
+                document.head.appendChild(script);
+            } else {
+                console.log('Chart.js已加载');
+                // 加载订单数据
+                fetchMerchantOrders();
+            }
+        });
+
+        // 检查商家登录状态
+        function checkMerchantLogin() {
+            const merchantLoggedIn = localStorage.getItem('merchantLoggedIn');
+            const merchantName = localStorage.getItem('merchantName');
+
+            if (!merchantLoggedIn || merchantLoggedIn !== 'true') {
+                // 未登录，跳转到登录页面
+                window.location.href = 'merchant-login.html';
+                return false;
+            }
+
+            return true;
+        }
+
+        // 获取商家订单
+        async function fetchMerchantOrders() {
+            try {
+                const merchantName = localStorage.getItem('merchantName');
+                if (!merchantName) {
+                    console.error('未找到商家用户名，请先登录');
+                    alert('请先登录');
+                    window.location.href = 'merchant-login.html';
+                    return;
+                }
+
+                console.log(`正在获取商家 ${merchantName} 的订单列表`);
+
+                const response = await fetch(`http://localhost:8080/api/merchant/orders/${merchantName}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log(`获取到 ${data.totalCount} 条订单数据`);
+                    console.log('订单数据详情:', data.orders);
+
+                    // 检查订单状态分布
+                    const statusCounts = {};
+                    data.orders.forEach(order => {
+                        const status = order.status || '未处理';
+                        statusCounts[status] = (statusCounts[status] || 0) + 1;
+                    });
+                    console.log('订单状态分布:', statusCounts);
+
+                    // 检查订单金额
+                    data.orders.forEach((order, index) => {
+                        console.log(`订单 ${index+1}: ID=${order.id}, 状态=${order.status}, 金额=${order.totalPrice}, 商品ID=${order.productId}`);
+                    });
+
+                    // 处理订单数据
+                    processOrderData(data.orders);
+                } else {
+                    console.error('获取订单失败:', data.message);
+                    alert('获取订单失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('获取订单出错:', error);
+                alert('获取订单失败，请稍后重试');
+            }
+        }
+
+        // 处理订单数据
+        function processOrderData(orders) {
+            try {
+                if (!orders || orders.length === 0) {
+                    console.log('没有订单数据');
+                    // 显示空数据的统计卡片
+                    updateStatCards([]);
+                    return;
+                }
+
+                console.log('开始处理订单数据, 总数: ' + orders.length);
+
+                // 按时间范围筛选订单
+                const filteredOrders = filterOrdersByTimeRange(orders);
+                console.log('筛选后的订单数据, 总数: ' + filteredOrders.length);
+
+                // 更新统计卡片
+                updateStatCards(filteredOrders);
+
+                // 更新图表
+                try {
+                    updateOrderStatusChart(filteredOrders);
+                } catch (chartError) {
+                    console.error('更新订单状态图表失败:', chartError);
+                }
+
+                try {
+                    updateOrderAmountChart(filteredOrders);
+                } catch (chartError) {
+                    console.error('更新订单金额图表失败:', chartError);
+                }
+
+                try {
+                    updateMonthlySalesChart(filteredOrders);
+                } catch (chartError) {
+                    console.error('更新月度销售图表失败:', chartError);
+                }
+
+                try {
+                    updateOrderStatusAmountChart(filteredOrders);
+                } catch (chartError) {
+                    console.error('更新订单状态金额图表失败:', chartError);
+                }
+            } catch (error) {
+                console.error('处理订单数据失败:', error);
+                alert('处理订单数据失败，请刷新页面重试');
+            }
+        }
+
+        // 按时间范围筛选订单
+        function filterOrdersByTimeRange(orders) {
+            const timeRange = document.getElementById('timeRangeFilter').value;
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay());
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+            if (timeRange === 'all') {
+                return orders;
+            }
+
+            return orders.filter(order => {
+                const orderDate = new Date(order.purchaseTime);
+
+                switch (timeRange) {
+                    case 'today':
+                        return orderDate >= startOfDay;
+                    case 'week':
+                        return orderDate >= startOfWeek;
+                    case 'month':
+                        return orderDate >= startOfMonth;
+                    case 'year':
+                        return orderDate >= startOfYear;
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        // 更新统计卡片
+        function updateStatCards(orders) {
+            try {
+                // 总订单数
+                document.getElementById('totalOrders').textContent = orders.length;
+
+                // 按状态统计金额
+                const statusAmounts = {
+                    '未处理': 0,
+                    '处理中': 0,
+                    '已完成': 0,
+                    '已取消': 0
+                };
+
+                orders.forEach(order => {
+                    const status = order.status || '未处理';
+                    const amount = parseFloat(order.totalPrice) || 0;
+                    statusAmounts[status] = (statusAmounts[status] || 0) + amount;
+                });
+
+                // 总销售额（所有状态的总和）
+                const totalSales = Object.values(statusAmounts).reduce((sum, amount) => sum + amount, 0);
+                document.getElementById('totalSales').textContent = `¥${totalSales.toFixed(2)}`;
+
+                // 已完成订单数和金额
+                const completedOrders = orders.filter(order => order.status === '已完成').length;
+                document.getElementById('completedOrders').textContent = completedOrders;
+                document.getElementById('completedAmount').textContent = `¥${statusAmounts['已完成'].toFixed(2)}`;
+
+                // 取消订单数和金额
+                const cancelledOrders = orders.filter(order => order.status === '已取消').length;
+                document.getElementById('cancelledOrders').textContent = cancelledOrders;
+                document.getElementById('cancelledAmount').textContent = `¥${statusAmounts['已取消'].toFixed(2)}`;
+
+                // 未处理订单数和金额
+                const pendingOrders = orders.filter(order => !order.status || order.status === '未处理').length;
+                document.getElementById('pendingOrders').textContent = pendingOrders;
+                document.getElementById('pendingAmount').textContent = `¥${statusAmounts['未处理'].toFixed(2)}`;
+
+                // 处理中订单数和金额
+                const processingOrders = orders.filter(order => order.status === '处理中').length;
+                document.getElementById('processingOrders').textContent = processingOrders;
+                document.getElementById('processingAmount').textContent = `¥${statusAmounts['处理中'].toFixed(2)}`;
+
+                console.log('统计卡片更新成功:', {
+                    总订单: orders.length,
+                    总销售额: totalSales.toFixed(2),
+                    已完成: { 数量: completedOrders, 金额: statusAmounts['已完成'].toFixed(2) },
+                    已取消: { 数量: cancelledOrders, 金额: statusAmounts['已取消'].toFixed(2) },
+                    未处理: { 数量: pendingOrders, 金额: statusAmounts['未处理'].toFixed(2) },
+                    处理中: { 数量: processingOrders, 金额: statusAmounts['处理中'].toFixed(2) }
+                });
+            } catch (error) {
+                console.error('更新统计卡片失败:', error);
+            }
+        }
+
+        // 更新订单状态饼图
+        function updateOrderStatusChart(orders) {
+            console.log('开始更新订单状态饼图');
+
+            // 检查是否有数据
+            if (!orders || orders.length === 0) {
+                console.log('没有订单数据，不创建饼图');
+                return;
+            }
+
+            // 统计各状态订单数量
+            const statusCounts = {
+                '未处理': 0,
+                '处理中': 0,
+                '已完成': 0,
+                '已取消': 0
+            };
+
+            orders.forEach(order => {
+                const status = order.status || '未处理';
+                statusCounts[status] = (statusCounts[status] || 0) + 1;
+            });
+
+            console.log('订单状态统计:', statusCounts);
+
+            // 创建饼图
+            const ctx = document.getElementById('orderStatusChart').getContext('2d');
+
+            // 如果图表已存在，先销毁它
+            if (window.orderStatusChart instanceof Chart) {
+                window.orderStatusChart.destroy();
+            }
+
+            // 过滤掉数量为0的状态
+            const filteredLabels = [];
+            const filteredData = [];
+            const filteredColors = [];
+
+            const colors = {
+                '未处理': '#808080', // 灰色
+                '处理中': '#2196F3', // 蓝色
+                '已完成': '#4CAF50', // 绿色
+                '已取消': '#f44336'  // 红色
+            };
+
+            Object.keys(statusCounts).forEach(status => {
+                const count = statusCounts[status];
+                if (count > 0) {
+                    filteredLabels.push(status);
+                    filteredData.push(count);
+                    filteredColors.push(colors[status]);
+                }
+            });
+
+            console.log('过滤后的数据:', { labels: filteredLabels, data: filteredData, colors: filteredColors });
+
+            window.orderStatusChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: filteredLabels,
+                    datasets: [{
+                        data: filteredData,
+                        backgroundColor: filteredColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 更新订单金额饼图
+        function updateOrderAmountChart(orders) {
+            console.log('开始更新订单金额饼图');
+
+            // 检查是否有数据
+            if (!orders || orders.length === 0) {
+                console.log('没有订单数据，不创建饼图');
+                return;
+            }
+
+            // 统计各状态订单金额
+            const statusAmounts = {
+                '未处理': 0,
+                '处理中': 0,
+                '已完成': 0,
+                '已取消': 0
+            };
+
+            // 计算每个订单的状态和金额
+            console.log('开始计算各状态金额:');
+            console.log('原始订单数据:', orders);
+
+            // 打印每个订单的详细信息
+            orders.forEach((order, index) => {
+                console.log(`订单 ${index+1}: ID=${order.id}, 状态=${order.status}, 金额=${order.totalPrice}, 商品ID=${order.productId}`);
+            });
+
+            // 按状态分组计算金额
+            const ordersByStatus = {
+                '未处理': [],
+                '处理中': [],
+                '已完成': [],
+                '已取消': []
+            };
+
+            // 先将订单按状态分组
+            orders.forEach(order => {
+                const status = order.status || '未处理';
+                // 确保状态存在于我们的数据结构中
+                if (ordersByStatus[status]) {
+                    ordersByStatus[status].push(order);
+                } else {
+                    ordersByStatus['未处理'].push(order);
+                }
+            });
+
+            // 打印分组结果
+            Object.keys(ordersByStatus).forEach(status => {
+                console.log(`状态 ${status} 的订单数: ${ordersByStatus[status].length}`);
+            });
+
+            // 然后计算每个状态的总金额
+            Object.keys(statusAmounts).forEach(status => {
+                statusAmounts[status] = ordersByStatus[status].reduce((sum, order) => {
+                    const amount = parseFloat(order.totalPrice) || 0;
+                    return sum + amount;
+                }, 0);
+                console.log(`状态 ${status} 的总金额: ${statusAmounts[status]}`);
+            });
+
+            console.log('订单金额统计:', statusAmounts);
+
+            // 创建饼图
+            const ctx = document.getElementById('orderAmountChart').getContext('2d');
+
+            // 如果图表已存在，先销毁它
+            if (window.orderAmountChart instanceof Chart) {
+                window.orderAmountChart.destroy();
+            }
+
+            // 准备所有状态的数据，即使金额为0
+            const allLabels = ['未处理', '处理中', '已完成', '已取消'];
+            const allData = allLabels.map(status => statusAmounts[status] || 0);
+
+            const colors = {
+                '未处理': '#808080', // 灰色
+                '处理中': '#2196F3', // 蓝色
+                '已完成': '#4CAF50', // 绿色
+                '已取消': '#f44336'  // 红色
+            };
+
+            const allColors = allLabels.map(status => colors[status]);
+
+            console.log('所有状态的数据:', { labels: allLabels, data: allData, colors: allColors });
+
+            window.orderAmountChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: allLabels,
+                    datasets: [{
+                        data: allData,
+                        backgroundColor: allColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ¥${value.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 更新月度销售趋势图
+        function updateMonthlySalesChart(orders) {
+            // 按月份分组订单
+            const monthlySales = {};
+            const monthlyOrders = {};
+
+            orders.forEach(order => {
+                const date = new Date(order.purchaseTime);
+                const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                monthlySales[monthKey] = (monthlySales[monthKey] || 0) + (parseFloat(order.totalPrice) || 0);
+                monthlyOrders[monthKey] = (monthlyOrders[monthKey] || 0) + 1;
+            });
+
+            // 排序月份
+            const sortedMonths = Object.keys(monthlySales).sort();
+
+            // 创建折线图
+            const ctx = document.getElementById('monthlySalesChart').getContext('2d');
+
+            // 如果图表已存在，先销毁它
+            if (window.monthlySalesChart instanceof Chart) {
+                window.monthlySalesChart.destroy();
+            }
+
+            window.monthlySalesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedMonths,
+                    datasets: [
+                        {
+                            label: '销售额',
+                            data: sortedMonths.map(month => monthlySales[month]),
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            yAxisID: 'y',
+                            fill: true
+                        },
+                        {
+                            label: '订单数',
+                            data: sortedMonths.map(month => monthlyOrders[month]),
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            yAxisID: 'y1',
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '销售额 (¥)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: '订单数'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 更新订单状态金额统计图
+        function updateOrderStatusAmountChart(orders) {
+            console.log('开始更新订单状态金额统计图');
+
+            // 检查是否有数据
+            if (!orders || orders.length === 0) {
+                console.log('没有订单数据，不创建图表');
+                return;
+            }
+
+            // 所有状态
+            const allStatuses = ['未处理', '处理中', '已完成', '已取消'];
+
+            // 按状态和月份分组
+            const statusMonthlyData = {};
+            allStatuses.forEach(status => {
+                statusMonthlyData[status] = {};
+            });
+
+            // 获取所有月份
+            const allMonths = new Set();
+            orders.forEach(order => {
+                const date = new Date(order.purchaseTime);
+                const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                allMonths.add(monthKey);
+            });
+
+            // 如果没有足够的月份数据，添加一些模拟数据用于测试
+            if (allMonths.size < 2) {
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth();
+
+                // 添加最近几个月份
+                for (let i = 0; i < 6; i++) {
+                    const month = currentMonth - i;
+                    const year = currentYear + Math.floor(month / 12);
+                    const adjustedMonth = ((month % 12) + 12) % 12; // 处理负数月份
+                    const monthKey = `${year}-${(adjustedMonth + 1).toString().padStart(2, '0')}`;
+                    allMonths.add(monthKey);
+                }
+
+                console.log('添加了模拟月份数据:', allMonths);
+            }
+
+            const sortedMonths = Array.from(allMonths).sort();
+
+            // 初始化所有月份的数据为0
+            allStatuses.forEach(status => {
+                sortedMonths.forEach(month => {
+                    statusMonthlyData[status][month] = 0;
+                });
+            });
+
+            // 按状态和月份分组订单
+            const ordersByStatusAndMonth = {};
+            allStatuses.forEach(status => {
+                ordersByStatusAndMonth[status] = {};
+                sortedMonths.forEach(month => {
+                    ordersByStatusAndMonth[status][month] = [];
+                });
+            });
+
+            // 将订单分组到对应的状态和月份
+            orders.forEach(order => {
+                const status = order.status || '未处理';
+                const date = new Date(order.purchaseTime);
+                const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                // 如果状态不在预定义的状态列表中，则归类为未处理
+                const normalizedStatus = allStatuses.includes(status) ? status : '未处理';
+
+                // 确保月份存在
+                if (!ordersByStatusAndMonth[normalizedStatus][monthKey]) {
+                    ordersByStatusAndMonth[normalizedStatus][monthKey] = [];
+                }
+
+                // 添加订单到对应的分组
+                ordersByStatusAndMonth[normalizedStatus][monthKey].push(order);
+            });
+
+            // 打印分组结果
+            allStatuses.forEach(status => {
+                console.log(`状态 ${status} 的订单分组:`);
+                sortedMonths.forEach(month => {
+                    console.log(`  月份 ${month}: ${ordersByStatusAndMonth[status][month].length} 个订单`);
+                });
+            });
+
+            // 计算每个状态和月份的总金额
+            allStatuses.forEach(status => {
+                sortedMonths.forEach(month => {
+                    statusMonthlyData[status][month] = ordersByStatusAndMonth[status][month].reduce((sum, order) => {
+                        const amount = parseFloat(order.totalPrice) || 0;
+                        return sum + amount;
+                    }, 0);
+                    console.log(`状态 ${status}, 月份 ${month} 的总金额: ${statusMonthlyData[status][month]}`);
+                });
+            });
+
+            console.log('按月份和状态统计的金额:', statusMonthlyData);
+
+            // 准备数据集
+            const colors = {
+                '未处理': '#808080', // 灰色
+                '处理中': '#2196F3', // 蓝色
+                '已完成': '#4CAF50', // 绿色
+                '已取消': '#f44336'  // 红色
+            };
+
+            const datasets = allStatuses.map(status => {
+                return {
+                    label: status,
+                    data: sortedMonths.map(month => statusMonthlyData[status][month] || 0),
+                    borderColor: colors[status],
+                    backgroundColor: colors[status],
+                    tension: 0.1,
+                    pointRadius: 5,  // 增大点的半径
+                    pointHoverRadius: 8,  // 鼠标悬停时点的半径
+                    fill: false  // 不填充区域
+                };
+            });
+
+            console.log('折线图数据集:', datasets);
+
+            // 创建折线图
+            const ctx = document.getElementById('orderStatusAmountChart').getContext('2d');
+
+            // 如果图表已存在，先销毁它
+            if (window.orderStatusAmountChart instanceof Chart) {
+                window.orderStatusAmountChart.destroy();
+            }
+
+            window.orderStatusAmountChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedMonths,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,  // 使用点样式而不是线样式
+                                padding: 20  // 增加图例标签的间距
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',  // 显示同一个x轴上的所有数据点
+                            intersect: false  // 不需要直接悬停在数据点上
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '金额 (¥)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '月份'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,  // 不需要直接悬停在数据点上
+                        mode: 'index'  // 显示同一个x轴上的所有数据点
+                    }
+                }
+            });
+        }
+
+        // 更新图表
+        function updateCharts() {
+            fetchMerchantOrders();
+        }
+    </script>
+</body>
+</html>

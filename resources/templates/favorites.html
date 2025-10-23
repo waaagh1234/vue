@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收藏夹 - 优品商城</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .total-count {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .product-card {
+            flex: 0 0 calc(25% - 20px);
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            min-width: 220px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            height: 44px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .price-now {
+            color: #ff0036;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .price-original {
+            color: #999;
+            font-size: 14px;
+            text-decoration: line-through;
+            margin-left: 8px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .sales {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .favorite-btn {
+            color: #ff0036;
+        }
+
+        .no-products, .error-message {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .error-message button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: #ff0036;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .error-message button:hover {
+            background: #e60033;
+        }
+
+        .back-to-mall {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff0036;
+            text-decoration: none;
+        }
+
+        .back-to-mall:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">我的收藏</h1>
+        <p class="total-count" id="totalCount"></p>
+    </div>
+
+    <div id="favoritesGrid" class="product-grid"></div>
+
+    <a href="mall.html" class="back-to-mall">
+        <i class="fas fa-arrow-left"></i> 返回商城
+    </a>
+</div>
+
+<script>
+    // 脚本部分保持不变
+    async function renderFavorites() {
+        const favoritesGrid = document.getElementById('favoritesGrid');
+        const totalCount = document.getElementById('totalCount');
+
+        if (!favoritesGrid) {
+            console.error('找不到 favoritesGrid 元素');
+            return;
+        }
+
+        // 获取用户名
+        const username = localStorage.getItem('username');
+        const userName = username;
+        console.log('获取到的用户名:', userName);
+        if (!userName) {
+            favoritesGrid.innerHTML = '<div class="no-products">请先登录</div>';
+            return;
+        }
+
+        try {
+            // 获取用户收藏的商品 ID
+            const response = await fetch(`http://localhost:8080/user-favorites/${userName}`);
+            if (!response.ok) {
+                throw new Error('获取收藏商品 ID 失败');
+            }
+            const productIds = await response.json();
+
+            if (productIds.length === 0) {
+                favoritesGrid.innerHTML = '<div class="no-products">暂无收藏商品</div>';
+                return;
+            }
+
+            // 显示商品总数
+            totalCount.textContent = `共 ${productIds.length} 件商品`;
+
+            // 清空网格以便重新渲染
+            favoritesGrid.innerHTML = '';
+
+            // 获取每个商品的详细信息
+            for (const productId of productIds) {
+                const productResponse = await fetch(`http://localhost:8080/product/${productId}`);
+                if (!productResponse.ok) {
+                    throw new Error(`获取商品详情失败，商品 ID: ${productId}`);
+                }
+                const product = await productResponse.json();
+
+                const card = document.createElement('div');
+                card.classList.add('product-card');
+                card.innerHTML = `
+          <div class="product-image">
+            <img src="${product.imagePath}" alt="${product.productName}">
+          </div>
+          <div class="product-info">
+            <div class="product-name">${product.productName}</div>
+            <div class="product-price">
+              <span class="price-now">¥${product.nowPrice}</span>
+              <span class="price-original">¥${product.originalPrice}</span>
+            </div>
+            <div class="product-footer">
+              <span class="sales">已售${product.salesCount}件</span>
+            </div>
+            <div class="actions">
+              <span class="action-btn favorite-btn" onclick="toggleFavorite(${product.id})">
+                <i class="fas fa-heart"></i>取消收藏
+              </span>
+              <span class="action-btn" onclick="addToCart(${product.id})">
+                <i class="fas fa-shopping-cart"></i>加入购物车
+              </span>
+            </div>
+          </div>
+        `;
+                favoritesGrid.appendChild(card);
+            }
+        } catch (error) {
+            console.error('获取收藏商品数据失败:', error);
+            favoritesGrid.innerHTML = `
+        <div class="error-message">
+          <p>获取收藏商品数据失败</p>
+          <button onclick="renderFavorites()">重试</button>
+        </div>
+      `;
+        }
+    }
+
+    // 页面加载时渲染收藏夹
+    window.onload = renderFavorites;
+
+    // 取消收藏功能
+    async function toggleFavorite(productId) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/user-favorites/${userName}/${productId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('取消收藏失败');
+            }
+
+            alert('已取消收藏');
+            renderFavorites();
+        } catch (error) {
+            console.error('取消收藏失败:', error);
+            alert('取消收藏失败，请稍后重试');
+        }
+    }
+
+    // 加入购物车功能
+    async function addToCart(productId) {
+        const userName = localStorage.getItem('username');
+        if (!userName) {
+            alert('请先登录');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userName: userName,
+                    productId: productId,
+                    quantity: 1
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('加入购物车失败');
+            }
+
+            alert('已加入购物车');
+        } catch (error) {
+            console.error('加入购物车失败:', error);
+            alert('加入购物车失败，请稍后重试');
+        }
+    }
+</script>
+</body>
+</html>

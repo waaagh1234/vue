@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <title>登录与注册</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+
+    .flex-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      background-color: #3490dc;
+      color: white;
+    }
+
+    .btn-register {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .forgot-password {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      color: #3490dc;
+      text-decoration: none;
+    }
+  </style>
+  <script>
+    function showLoginPage() {
+      document.getElementById('mainPage').classList.add('hidden');
+      document.getElementById('loginPage').classList.remove('hidden');
+    }
+
+    function showRegisterPage() {
+      document.getElementById('mainPage').classList.add('hidden');
+      document.getElementById('registerPage').classList.remove('hidden');
+    }
+
+    function goBackToMain() {
+      const allPages = ['mainPage', 'loginPage', 'registerPage'];
+      allPages.forEach(page => {
+        const element = document.getElementById(page);
+        if (page === 'mainPage') {
+          element.classList.remove('hidden');
+        } else {
+          element.classList.add('hidden');
+        }
+      });
+    }
+
+
+      function submitLogin() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      console.log('获取的用户名:', username);
+      console.log('获取的密码:', password);
+
+      fetch('http://localhost:8080/login', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    })
+      .then(response => {
+      if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+      return response.json();
+    })
+      .then(data => {
+      console.log('后端返回的数据:', data);
+        if (data.success) {
+          // 登录成功，存储 userId 和 username 到 localStorage
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', data.username);
+          console.log('保存到 localStorage 的 userId:', localStorage.getItem('userId'));
+          console.log('保存到 localStorage 的 username:', localStorage.getItem('username'));
+          alert('登录成功');
+          window.location.href = 'mall.html';
+        }else {
+      alert('登录失败，账号或密码错误');
+    }
+    })
+      .catch(error => {
+      console.error('请求出错:', error);
+      alert('登录请求出现错误，请稍后重试');
+    });
+    }
+
+
+    function submitRegister() {
+      const regUsername = document.getElementById('regUsername').value;
+      const regEmail = document.getElementById('regEmail').value;
+      const regPassword = document.getElementById('regPassword').value;
+
+      console.log('注册用户名:', regUsername);
+      console.log('注册邮箱:', regEmail);
+      console.log('注册密码:', regPassword);
+
+      fetch('http://localhost:8080/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `username=${encodeURIComponent(regUsername)}&email=${encodeURIComponent(regEmail)}&password=${encodeURIComponent(regPassword)}`
+      })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then(data => {
+                // 打印 data 的值
+                console.log('后端返回的数据:', data);
+                if (data) {
+                  alert('注册成功，请重新登录');
+                  window.location.href = 'success_login.html';
+                } else {
+                  alert('注册失败，用户名或邮箱已存在');
+                }
+              })
+              .catch(error => {
+                console.error('请求出错:', error);
+                alert('注册请求出现错误，请稍后重试');
+              });
+    }
+
+
+  </script>
+</head>
+
+<body class="bg-gray-100 flex-center">
+<div id="mainPage" class="form-container">
+  <h2 class="text-2xl font-bold text-center mb-4">欢迎使用</h2>
+  <button class="btn btn-login" onclick="showLoginPage()">登录界面</button>
+  <button class="btn btn-register" onclick="showRegisterPage()">注册界面</button>
+  <a href="reset-password.html" class="forgot-password">忘记密码?</a>
+</div>
+<div id="loginPage" class="form-container hidden">
+  <h2 class="text-2xl font-bold text-center mb-4">登录</h2>
+  <form>
+    <div class="mb-4">
+      <label for="loginUsername" class="block text-gray-700 text-sm font-bold mb-2">用户名</label>
+      <input type="text" id="loginUsername" name="loginUsername"
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+             placeholder="请输入用户名">
+    </div>
+    <div class="mb-6">
+      <label for="loginPassword" class="block text-gray-700 text-sm font-bold mb-2">密码</label>
+      <input type="password" id="loginPassword" name="loginPassword"
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+             placeholder="请输入密码">
+    </div>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            type="button" onclick="submitLogin()">确认登录</button>
+  </form>
+  <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4"
+          onclick="goBackToMain()">返回主界面</button>
+</div>
+<div id="registerPage" class="form-container hidden">
+  <h2 class="text-2xl font-bold text-center mb-4">注册</h2>
+  <form>
+    <div class="mb-4">
+      <label for="regUsername" class="block text-gray-700 text-sm font-bold mb-2">用户名</label>
+      <input type="text" id="regUsername" name="regUsername"
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+             placeholder="请输入用户名">
+    </div>
+    <div class="mb-4">
+      <label for="regEmail" class="block text-gray-700 text-sm font-bold mb-2">邮箱</label>
+      <input type="email" id="regEmail" name="regEmail"
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+             placeholder="请输入邮箱">
+    </div>
+    <div class="mb-6">
+      <label for="regPassword" class="block text-gray-700 text-sm font-bold mb-2">密码</label>
+      <input type="password" id="regPassword" name="regPassword"
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+             placeholder="请输入密码">
+    </div>
+    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            type="button" onclick="submitRegister()">确认注册</button>
+  </form>
+  <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4"
+          onclick="goBackToMain()">返回主界面</button>
+</div>
+</body>
+
+</html>
